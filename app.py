@@ -7,7 +7,7 @@ import streamlit as st
 
 
 @st.cache(suppress_st_warning=True)
-def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0): 
+def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0, RGB = (255,255,255)): 
     """This is the hough art function"""
     # Program Constants
     file_type = 'P3'
@@ -16,6 +16,9 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
     ROW = 200
     H_COL = 800
     H_ROW = 800
+    R = RGB[0]
+    G = RGB[1]
+    B = RGB[2]
 
     # Image lists
     hough = [ [ 0 for y in range(H_COL) ] for x in range(H_ROW) ]
@@ -39,29 +42,47 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
         out_file.write(f"{file_type} {str(H_COL)} {str(H_ROW)} {ppm_color} ")
         for i in range(H_ROW):
             for j in range(H_COL):
-                out_file.write(f"{int(hough[i][j]*(1.0 + i/23.0))} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(H_ROW - j)/30)} ")
+                out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
+                # out_file.write(f"{int(hough[i][j]+R)} {int(hough[i][j]+G)} {int(hough[i][j]+B)} ")
 
 
 # --- Main -------------------------------------------------------------------------
 
-# Manipluatable Variables
-ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
+###### Sidebar ##################################################################
 
+
+### Manipluatable Variables
+
+# Parameter tuning
 st.sidebar.header("Random")
 if st.sidebar.button('Random'):
     # Random button to randomly generate
+    st.sidebar.header("Generated Parameters")
     amplitude = st.sidebar.slider("amplitude", value=randrange(3, 10))
     frequency = st.sidebar.slider("frequency", value=randrange(0, 10))
     phase_x = st.sidebar.slider("phase_x", value=randrange(0, 10))
     phase_y = st.sidebar.slider("phase_y", value=randrange(0, 10))
 else:
+    st.sidebar.header("Parameters")
     amplitude = st.sidebar.slider("amplitude")
     frequency = st.sidebar.slider("frequency")
     phase_x = st.sidebar.slider("phase_x")
     phase_y = st.sidebar.slider("phase_y")
 
+# Color tuning
+color = st.sidebar.color_picker('Pick A Color', '#00f900').lstrip('#')
+st.write('The current color is', '#' + color)
+color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+
+# Upload File
+ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
+
+
+###### Body ##################################################################
 
 if ppm_upload is not None:
+    ### If there is an uploaded PPM File
+
     # Reading Uploaded PPM File
     ppm = []
     for row in ppm_upload:
@@ -81,6 +102,7 @@ if ppm_upload is not None:
     plt.imshow(img)
     plt.savefig('img.png', dpi=500)
     st.image('img.png')
+    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
 
     # Download Button
     with open("py_art.ppm", "r") as file:
@@ -91,6 +113,7 @@ if ppm_upload is not None:
             )
     st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
 else:
+    ### Use the default PPM File
     # Read default drawing file
     with open("drawing.ppm", "r") as in_file:
         file_type = next(in_file)
@@ -105,6 +128,7 @@ else:
 
     # Calling hough Function
     hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
+    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
 
     # Display Image
     img = cv2.imread("py_art.ppm")
@@ -130,155 +154,3 @@ else:
 
 
 
-
-# Attempts to display ppm on streamlit
-
-    # stringio = StringIO(ppm_upload.getvalue().decode("utf-8"))
-    # st.write(stringio)
-
-    # # To read file as string:
-    # string_data = stringio.read()
-    # st.write(string_data)
-
-
-
-    
-# import streamlit.components.v1 as components
-# components.html(
-#     """
-#     <head>
-#         <meta charset="UTF-8">
-#         <style type="text/css">
-#             form, div, p {
-#                 text-align:center;
-#             }
-#             div {
-#                 margin-top: 5px;
-#                 margin-bottom: 5px;
-#             }
-#             form,div {
-#                 margin-left:auto;
-#                 margin-right:auto;
-#             }
-#             #instruct {
-#             }
-#             #name {
-#                 font-size: 1.4em;
-#                 font-weight: bold;
-#             }
-#             #errorDiv {
-#                 text-align:center;
-#             }
-#             .error {
-#                 display:inline-block;
-#                 text-align:left;
-#                 margin-left:auto;
-#                 margin-right:auto;
-#                 font-weight:bold;
-#             }
-#         </style>
-#         <script type="text/javascript">
-#             var reloadButton;
-#             var canvas;
-#             var ctx;
-
-#             function showError(msg) {
-#                 var errorDiv = document.getElementById("errorDiv");
-#                 errorDiv.innerHTML = '<div class="error">Error: ' + msg + '</div>';
-#                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-#             }
-
-#             function processPPM(fileContents) {
-#                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-             
-#                 fileContents = fileContents.replace(/^\s+/, '').replace(/\s+$/, '');
-#                 var data = fileContents.split(/\s+/);
-
-#                 if (fileContents.substr(0, 2) != 'P3' || data[0] != 'P3') {
-#                     showError('File is not a PPM');
-#                     return;
-#                 } 
-
-#                 var width = data[1];
-#                 var height = data[2];
-#                 var maxColors = data[3];
-
-#                 if (data[3] != 255) {
-#                     showError('MaxColors is not 255');
-#                     return;
-#                 }
-
-#                 if (data.length != 3 * width * height + 4) {
-#                     showError('Not enough pixel data.<br>'
-#                               + 'Found: ' + (data.length  -  4) + '<br>'
-#                               + 'Expecting: ' + (3 * width * height) + '<br>'
-#                               + 'Based on width = ' + width 
-#                               + ' and height = ' + height);
-#                     return;
-#                 }
-
-#                 errorDiv.innerHTML = '';
-
-#                 canvas.width=width; 
-#                 canvas.height=height; 
-
-#                 var img = ctx.getImageData(0, 0, width, height);
-#                 var pixels = img.data;
-
-#                 var imageIndex = 0;
-#                 for (var i = 4; i < data.length; i += 3) {
-#                     pixels[imageIndex++] = data[i]; // r
-#                     pixels[imageIndex++] = data[i+1]; // g
-#                     pixels[imageIndex++] = data[i+2]; // b
-#                     pixels[imageIndex++] = 255; // a
-#                 }
-#                 ctx.putImageData(img, 0, 0);
-#                 reloadButton.disabled = false;
-#             }
-
-#             function processFiles(files) {
-#                 if (! reloadButton) {
-#                     reloadButton = document.getElementById("reloadBtn");
-#                 }
-#                 if (! canvas) {
-#                     canvas = document.getElementById("imageCanvas");
-#                     ctx = canvas.getContext("2d");
-#                 }
-
-#                 reloadButton.disabled = true;
-
-#                 var file = files[0];
-#                 var filenameDiv = document.getElementById("filenameDiv");
-#                 filenameDiv.innerHTML = "File: " + file.name;
-
-#                 if (file.name.substr(file.name.length-4) != ".ppm") {
-#                     showError('file name does not end with ".ppm"');
-#                     return
-#                 }
-
-
-#                 var r = new FileReader();
-
-#                 r.onload = function(e) { 
-#                     var contents = e.target.result;
-#                     processPPM(contents);
-#                 } 
-#                 r.readAsText(file);
-
-#             }
-#         </script>
-#     </head>
-#     <body>
-#         <div id="name">PPM Viewer</div>
-#         <div id="instruct">Choose a PPM image to view</div>
-#         <form name="fileForm" id="fileForm">
-#             <input type="file" name="filedata" id="filedata" onchange="processFiles(this.files);">
-#             <br>
-#             <button id="reloadBtn" onclick="processFiles(this.form.filedata.files); return false;" disabled>Reload image</button>
-#         </form>
-#         <div id="filenameDiv"></div>
-#         <div id="errorDiv"></div>
-#         <div><canvas id="imageCanvas" width="100" height="100"></canvas></div>
-#     </body>
-#     """
-# )
