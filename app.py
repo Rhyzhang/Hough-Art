@@ -1,10 +1,12 @@
 import math
+from random import randrange
 
 import cv2
 import matplotlib.pyplot as plt
 import streamlit as st
 
 
+@st.cache(suppress_st_warning=True)
 def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0): 
     """This is the hough art function"""
     # Program Constants
@@ -43,15 +45,23 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
 # --- Main -------------------------------------------------------------------------
 
 # Manipluatable Variables
-amplitude = st.sidebar.slider("amplitude")
-frequency = st.sidebar.slider("frequency")
-phase_x = st.sidebar.slider("phase_x")
-phase_y = st.sidebar.slider("phase_y")
+ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
+
+st.sidebar.header("Random")
+if st.sidebar.button('Random'):
+    # Random button to randomly generate
+    amplitude = st.sidebar.slider("amplitude", value=randrange(3, 10))
+    frequency = st.sidebar.slider("frequency", value=randrange(0, 10))
+    phase_x = st.sidebar.slider("phase_x", value=randrange(0, 10))
+    phase_y = st.sidebar.slider("phase_y", value=randrange(0, 10))
+else:
+    amplitude = st.sidebar.slider("amplitude")
+    frequency = st.sidebar.slider("frequency")
+    phase_x = st.sidebar.slider("phase_x")
+    phase_y = st.sidebar.slider("phase_y")
 
 
-ppm_upload = st.file_uploader("Choose a PPM file", accept_multiple_files=False)
 if ppm_upload is not None:
-
     # Reading Uploaded PPM File
     ppm = []
     for row in ppm_upload:
@@ -62,7 +72,7 @@ if ppm_upload is not None:
         color_row = row_lst[3-1::3]
         img_inp.append(color_row)
 
-    # Callying Hough Function
+    # Calling hough
     hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
 
     # Display Image
@@ -79,10 +89,40 @@ if ppm_upload is not None:
                 data=file,
                 file_name="art.ppm",
             )
-    
+    st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
+else:
+    # Read default drawing file
+    with open("drawing.ppm", "r") as in_file:
+        file_type = next(in_file)
+        width, height = next(in_file).split()
+        ppm_color = next(in_file)
+
+        img_inp = []
+        for row in in_file:
+            row_lst = [int(i) for  i in row.split()]
+            color_row = row_lst[3-1::3]
+            img_inp.append(color_row) 
+
+    # Calling hough Function
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
+
+    # Display Image
+    img = cv2.imread("py_art.ppm")
+    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    plt.imshow(img)
+    plt.savefig('img.png', dpi=500)
+    st.image('img.png')
+
+    # Download Button
+    with open("py_art.ppm", "r") as file:
+        btn = st.download_button(
+                label="Download Art!",
+                data=file,
+                file_name="art.ppm",
+            )
     st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
 
-
+    st.header("Upload drawing to make it even more unique!")
 
 
 
