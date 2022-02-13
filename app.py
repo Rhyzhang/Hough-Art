@@ -1,4 +1,5 @@
 import math
+from difflib import restore
 from random import randrange
 
 import cv2
@@ -7,15 +8,15 @@ import streamlit as st
 
 
 @st.cache(suppress_st_warning=True)
-def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0, RGB = (255,255,255)): 
+def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0, RGB = (255,255,255), resolution = 800): 
     """This is the hough art function"""
     # Program Constants
     file_type = 'P3'
     ppm_color = 255
     COL = 300
     ROW = 200
-    H_COL = 800
-    H_ROW = 800
+    H_COL = resolution
+    H_ROW = resolution
     R = RGB[0]
     G = RGB[1]
     B = RGB[2]
@@ -58,21 +59,24 @@ st.sidebar.header("Random")
 if st.sidebar.button('Random'):
     # Random button to randomly generate
     st.sidebar.header("Generated Parameters")
+    resolution = st.sidebar.slider("resolution", min_value=800, max_value=1600, step=200, value=800)
     amplitude = st.sidebar.slider("amplitude", value=randrange(3, 10))
     frequency = st.sidebar.slider("frequency", value=randrange(0, 10))
     phase_x = st.sidebar.slider("phase_x", value=randrange(0, 10))
     phase_y = st.sidebar.slider("phase_y", value=randrange(0, 10))
 else:
+    # User chooses parameters
     st.sidebar.header("Parameters")
+    resolution = st.sidebar.slider("resolution", min_value=800, max_value=1600, step=200)
     amplitude = st.sidebar.slider("amplitude")
     frequency = st.sidebar.slider("frequency")
     phase_x = st.sidebar.slider("phase_x")
     phase_y = st.sidebar.slider("phase_y")
 
 # Color tuning
-color = st.sidebar.color_picker('Pick A Color', '#00f900').lstrip('#')
-st.write('The current color is', '#' + color)
-color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+# color = st.sidebar.color_picker('Pick A Color', '#00f900').lstrip('#')
+# st.write('The current color is', '#' + color)
+# color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
 # Upload File
 ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
@@ -94,7 +98,7 @@ if ppm_upload is not None:
         img_inp.append(color_row)
 
     # Calling hough
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
 
     # Display Image
     img = cv2.imread("py_art.ppm")
@@ -127,7 +131,7 @@ else:
             img_inp.append(color_row) 
 
     # Calling hough Function
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
     st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
 
     # Display Image
