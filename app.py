@@ -7,8 +7,36 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 
+def r_function(
+    r_parameter = '(cos,sin)',
+    amplitude = 2.5, 
+    frequency = 1.0, 
+    phase_x = 0.0, 
+    phase_y = 0.0, 
+    ):
+
+    if r_parameter == '(cos,sin)':
+    # r = amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
+
+    '(cos,tan)', 
+    '(sin,cos)',
+    '(sin,tan)',
+    '(tan,cos)',
+    '(tan,sin)')
+
+# Hough Function
 @st.cache(suppress_st_warning=True)
-def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0.0, RGB = (255,255,255), resolution = 800): 
+def hough(
+    img_inp,  
+    amplitude = 2.5, 
+    frequency = 1.0, 
+    phase_x = 0.0, 
+    phase_y = 0.0, 
+    RGB = (255,255,255), 
+    resolution = 800,
+    r_parameter = '(cos,sin)'
+    
+    ): 
     """This is the hough art function"""
     # Program Constants
     file_type = 'P3'
@@ -49,6 +77,7 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
 
 
 def display():
+    """This displays the hough art"""
     # Save Image
     img = cv2.imread("hough_art.ppm")
     img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
@@ -124,7 +153,7 @@ ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files
 st.sidebar.header("Still want to customize more?")
 st.sidebar.caption("You can tune the functions!")
 
-r_function = st.sidebar.selectbox(
+r_parameter = st.sidebar.selectbox(
     'radius function:',
     ('(cos,sin)', '(cos,tan)', '(sin,cos)', '(sin,tan)', '(tan,cos)', '(tan,sin)')
 )
