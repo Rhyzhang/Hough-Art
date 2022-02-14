@@ -32,7 +32,8 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
                 x = j - COL/2
                 y = i - ROW/2
                 for t in range(H_COL):
-                    r = amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
+                    r = amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
+                    # r = amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
                     xx = r * math.cos(2.0*math.pi*t/H_COL - phase_x);
                     yy = r * math.sin(2.0*math.pi*t/H_ROW - phase_y);
                     if xx >= -H_COL/2 and xx < H_COL/2 and yy >= -H_ROW/2 and yy < H_ROW/2:
@@ -118,6 +119,17 @@ else:
 
 # Upload File
 ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
+
+# Function Tuning
+st.sidebar.header("Still want to customize more?")
+st.sidebar.caption("You can tune the functions!")
+
+r_function = st.sidebar.selectbox(
+    'radius function:',
+    ('(cos,sin)', '(cos,tan)', '(sin,cos)', '(sin,tan)', '(tan,cos)', '(tan,sin)')
+)
+
+
 
 
 ###### Body ##################################################################
