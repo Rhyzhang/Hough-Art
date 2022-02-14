@@ -39,12 +39,50 @@ def hough(img_inp,  amplitude = 2.5, frequency = 1.0, phase_x = 0.0, phase_y = 0
                         hough[int(xx+H_COL/2)][int(yy+H_ROW/2)] = hough[int(xx+H_COL/2)][int(yy+H_ROW/2)] + 1
 
     # Write into art.ppm
-    with open("py_art.ppm", "w") as out_file:
+    with open("hough_art.ppm", "w") as out_file:
         out_file.write(f"{file_type} {str(H_COL)} {str(H_ROW)} {ppm_color} ")
         for i in range(H_ROW):
             for j in range(H_COL):
                 out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
                 # out_file.write(f"{int(hough[i][j]+R)} {int(hough[i][j]+G)} {int(hough[i][j]+B)} ")
+
+
+def display():
+    # Save Image
+    img = cv2.imread("hough_art.ppm")
+    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
+    plt.imshow(img)
+    plt.axis('off')
+    plt.savefig('hough_art.jpg', dpi=500)
+
+    # Display
+    st.image('hough_art.jpg', caption="Hough Art!!!", output_format="JPEG")
+    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
+
+    # Download Buttons
+    col1, col2 = st.columns(2)
+    with col1:
+        # Download PPM Button
+        with open("hough_art.ppm", "r") as file:
+            ppm_btn = st.download_button(
+                    label="Download PPM",
+                    data=file,
+                    file_name="art.ppm",
+                )
+    with col2:
+        # Download JPG Button
+        with open("hough_art.jpg", "rb") as file:
+            jpg_btn = st.download_button(
+                    label="Download JPG",
+                    data=file,
+                    file_name="hough_art.jpg",
+                )
+
+
+
+    st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
+
+
 
 
 # --- Main -------------------------------------------------------------------------
@@ -100,22 +138,9 @@ if ppm_upload is not None:
     # Calling hough
     hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
 
-    # Display Image
-    img = cv2.imread("py_art.ppm")
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    plt.imshow(img)
-    plt.savefig('img.png', dpi=500)
-    st.image('img.png')
-    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
+    # Display Hough
+    display()
 
-    # Download Button
-    with open("py_art.ppm", "r") as file:
-        btn = st.download_button(
-                label="Download Art!",
-                data=file,
-                file_name="art.ppm",
-            )
-    st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
 else:
     ### Use the default PPM File
     # Read default drawing file
@@ -132,23 +157,9 @@ else:
 
     # Calling hough Function
     hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
-    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
 
-    # Display Image
-    img = cv2.imread("py_art.ppm")
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    plt.imshow(img)
-    plt.savefig('img.png', dpi=500)
-    st.image('img.png')
-
-    # Download Button
-    with open("py_art.ppm", "r") as file:
-        btn = st.download_button(
-                label="Download Art!",
-                data=file,
-                file_name="art.ppm",
-            )
-    st.write("For a better view go here: https://www.cs.rhodes.edu/welshc/COMP141_F16/ppmReader.html")
+    # Display Hough
+    display()
 
     st.header("Upload drawing to make it even more unique!")
 
