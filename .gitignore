@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Hough art so git does not keep commiting 
+hough_art.jpg
+hough_art.ppm
+
