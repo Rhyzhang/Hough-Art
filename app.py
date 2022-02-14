@@ -8,21 +8,25 @@ import streamlit as st
 
 
 def r_function(
+    x,                              # x value of the point
+    y,                              # y value of the point
+    t,                              # index value of the iteration
     r_parameter = '(cos,sin)',
+    resolution = 800,
     amplitude = 2.5, 
     frequency = 1.0, 
     phase_x = 0.0, 
     phase_y = 0.0, 
     ):
+    H_COL = resolution
 
     if r_parameter == '(cos,sin)':
-    # r = amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
-
-    '(cos,tan)', 
-    '(sin,cos)',
-    '(sin,tan)',
-    '(tan,cos)',
-    '(tan,sin)')
+        return amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(sin,tan)':
+        return amplitude*(x*math.sin(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.tan(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(tan,cos)':
+        return amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.cos(2.0*math.pi*frequency*t/H_COL - phase_y));
+    
 
 # Hough Function
 @st.cache(suppress_st_warning=True)
@@ -60,8 +64,7 @@ def hough(
                 x = j - COL/2
                 y = i - ROW/2
                 for t in range(H_COL):
-                    r = amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
-                    # r = amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sin(2.0*math.pi*frequency*t/H_COL - phase_y));
+                    r = r_function(x, y, t, r_parameter=r_parameter, resolution=resolution, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y)
                     xx = r * math.cos(2.0*math.pi*t/H_COL - phase_x);
                     yy = r * math.sin(2.0*math.pi*t/H_ROW - phase_y);
                     if xx >= -H_COL/2 and xx < H_COL/2 and yy >= -H_ROW/2 and yy < H_ROW/2:
@@ -152,12 +155,11 @@ ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files
 # Function Tuning
 st.sidebar.header("Still want to customize more?")
 st.sidebar.caption("You can tune the functions!")
-
 r_parameter = st.sidebar.selectbox(
     'radius function:',
-    ('(cos,sin)', '(cos,tan)', '(sin,cos)', '(sin,tan)', '(tan,cos)', '(tan,sin)')
+    ('(cos,sin)', '(sin,tan)', '(tan,cos)'),
+    help="This changes how the radius calculated"
 )
-
 
 
 
@@ -177,7 +179,7 @@ if ppm_upload is not None:
         img_inp.append(color_row)
 
     # Calling hough
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter)
 
     # Display Hough
     display()
@@ -197,7 +199,7 @@ else:
             img_inp.append(color_row) 
 
     # Calling hough Function
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter)
 
     # Display Hough
     display()
