@@ -15,8 +15,9 @@ def r_function(
     amplitude = 2.5, 
     frequency = 1.0, 
     phase_x = 0.0, 
-    phase_y = 0.0, 
-    ):
+    phase_y = 0.0):
+    """This function calculates the radius for the polar cordinates"""
+
     H_COL = resolution
 
     if r_parameter == '(cos,sin)':
@@ -25,7 +26,42 @@ def r_function(
         return amplitude*(x*math.sin(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.tan(2.0*math.pi*frequency*t/H_COL - phase_y));
     elif r_parameter == '(tan,cos)':
         return amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.cos(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(cos,sinh)':
+        return amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sinh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(tan,sinh)':
+        return amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sinh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(sin,sinh)':
+        return amplitude*(x*math.sin(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.sinh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(cos,cosh)':
+        return amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.cosh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(tan,cosh)':
+        return amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.cosh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(sin,cosh)':
+        return amplitude*(x*math.sin(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.cosh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(cos,tanh)':
+        return amplitude*(x*math.cos(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.tanh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(tan,tanh)':
+        return amplitude*(x*math.tan(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.tanh(2.0*math.pi*frequency*t/H_COL - phase_y));
+    elif r_parameter == '(sin,tanh)':
+        return amplitude*(x*math.sin(2.0*math.pi*frequency*t/H_COL - phase_x) + y*math.tanh(2.0*math.pi*frequency*t/H_COL - phase_y));
     
+    
+    
+def color_function(color_algo, R, G, B, i, j, H_ROW, H_COL):
+    """This changes the color"""
+
+    if color_algo == "Ryan":
+        # My color algo
+        red = R*(1-((i)/resolution))
+        green = G*(1-((i)/resolution))
+        blue = (1.0 + i/2)
+        return red, green, blue;
+    elif color_algo == "Mr.Lin":
+        # Mr. Lin's Colors
+        red = (H_ROW - j)/20
+        green = (H_COL - j)/30
+        blue = (1.0 + i/23.0)
+        return red, green, blue;
 
 # Hough Function
 @st.cache(suppress_st_warning=True)
@@ -37,8 +73,8 @@ def hough(
     phase_y = 0.0, 
     RGB = (255,255,255), 
     resolution = 800,
-    r_parameter = '(cos,sin)'
-    
+    r_parameter = '(cos,sin)',
+    color_algo = "Ryan"
     ): 
     """This is the hough art function"""
     # Program Constants
@@ -75,24 +111,9 @@ def hough(
         for i in range(H_ROW):
             for j in range(H_COL):
 
-                ## Mr. Lin's Colors
-                # red = (H_ROW - j)/20
-                # green = (H_COL - j)/30
-                # blue = (1.0 + i/23.0)
+                red, green, blue = color_function(color_algo, R, G, B, i, j, H_ROW, H_COL)
 
-                # Test color 1
-                red = R*(1-(i/resolution))
-                green = G/2*(1-(i/resolution))
-                blue = (1.0 + i/23.0)
-
-                # if red == 255 and green == 255 and blue == 255:
                 out_file.write(f"{int(hough[i][j]*(red))} {int(hough[i][j]*(green))} {int(hough[i][j]*(blue))} ")
-
-                # out_file.write(f"{int(hough[i][j]*(i+j)*R/7)} {int(hough[i][j]*(i+j)*G/3)} {int(hough[i][j]*(i+j)*B/2)} ")
-
-                # Pretty colors
-                # out_file.write(f"{int(hough[i][j]*(H_ROW - j)/20)} {int(hough[i][j]*(H_COL - j)/30)} {int(hough[i][j]*(1.0 + i/23.0))} ")
-                # out_file.write(f"{int(hough[i][j]+R)} {int(hough[i][j]+G)} {int(hough[i][j]+B)} ")
 
 
 def display():
@@ -160,28 +181,36 @@ else:
     phase_x = st.sidebar.slider("phase_x")
     phase_y = st.sidebar.slider("phase_y")
 
+color_algo = st.sidebar.selectbox(
+    'Color Algo:',
+    ('Ryan', 'Mr.Lin'),
+    help="This changes how the color is distributed throughout the graph"
+)
+
 # Color tuning
-color = st.sidebar.color_picker('Pick A Color', '#FF0000').lstrip('#')
+color = st.sidebar.color_picker('Pick A Color', '#FF0000', help="NOTE: Only compatable with Ryan's algo").lstrip('#')
 st.write('The current color is', '#' + color)
 color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
-# Upload File
-ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
-
 # Function Tuning
-st.sidebar.header("Still want to customize more?")
 st.sidebar.caption("You can tune the functions!")
 drawing_selection = st.sidebar.selectbox(
     'Drawing Selection:',
     ('drawing1.ppm', 'drawing2.ppm', 'drawing3.ppm', 'drawing4.ppm', 'drawing5.ppm'),
-    help="This changes how the radius calculated"
+    help="This changes the input drawing that will be hough transformed"
 )
 r_parameter = st.sidebar.selectbox(
     'Radius Function:',
-    ('(cos,sin)', '(sin,tan)', '(tan,cos)'),
+    ('(cos,sin)', '(sin,tan)', '(tan,cos)',
+    '(cos,sinh)', '(tan,sinh)', '(sin,sinh)',
+    '(cos,cosh)', '(tan,cosh)', '(sin,cosh)',
+    '(cos,tanh)', '(tan,tanh)', '(sin,tahh)'),
     help="This changes how the radius calculated"
 )
 
+# Upload File
+st.sidebar.header("Still want to customize more?")
+ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
 
 
 ###### Body ##################################################################
@@ -200,7 +229,7 @@ if ppm_upload is not None:
         img_inp.append(color_row)
 
     # Calling hough
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB, color_algo=color_algo)
 
     # Display Hough
     display()
@@ -220,7 +249,7 @@ else:
             img_inp.append(color_row) 
 
     # Calling hough Function
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB, color_algo=color_algo)
 
     # Display Hough
     display()
