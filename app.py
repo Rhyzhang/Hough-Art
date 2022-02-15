@@ -183,7 +183,7 @@ else:
 
 color_algo = st.sidebar.selectbox(
     'Color Algo:',
-    ('Ryan', 'Mr.Lin'),
+    ('Mr.Lin', 'Ryan'),
     help="This changes how the color is distributed throughout the graph"
 )
 
