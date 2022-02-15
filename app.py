@@ -1,5 +1,4 @@
 import math
-from difflib import restore
 from random import randrange
 
 import cv2
@@ -75,9 +74,24 @@ def hough(
         out_file.write(f"{file_type} {str(H_COL)} {str(H_ROW)} {ppm_color} ")
         for i in range(H_ROW):
             for j in range(H_COL):
-                out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
-                # Mr.Lins colors
-                # out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
+
+                ## Mr. Lin's Colors
+                # red = (H_ROW - j)/20
+                # green = (H_COL - j)/30
+                # blue = (1.0 + i/23.0)
+
+                # Test color 1
+                red = R*(1-(i/resolution))
+                green = G/2*(1-(i/resolution))
+                blue = (1.0 + i/23.0)
+
+                # if red == 255 and green == 255 and blue == 255:
+                out_file.write(f"{int(hough[i][j]*(red))} {int(hough[i][j]*(green))} {int(hough[i][j]*(blue))} ")
+
+                # out_file.write(f"{int(hough[i][j]*(i+j)*R/7)} {int(hough[i][j]*(i+j)*G/3)} {int(hough[i][j]*(i+j)*B/2)} ")
+
+                # Pretty colors
+                # out_file.write(f"{int(hough[i][j]*(H_ROW - j)/20)} {int(hough[i][j]*(H_COL - j)/30)} {int(hough[i][j]*(1.0 + i/23.0))} ")
                 # out_file.write(f"{int(hough[i][j]+R)} {int(hough[i][j]+G)} {int(hough[i][j]+B)} ")
 
 
@@ -147,9 +161,9 @@ else:
     phase_y = st.sidebar.slider("phase_y")
 
 # Color tuning
-# color = st.sidebar.color_picker('Pick A Color', '#00f900').lstrip('#')
-# st.write('The current color is', '#' + color)
-# color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+color = st.sidebar.color_picker('Pick A Color', '#FF0000').lstrip('#')
+st.write('The current color is', '#' + color)
+color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
 # Upload File
 ppm_upload = st.sidebar.file_uploader("Choose a PPM file", accept_multiple_files=False)
@@ -186,7 +200,7 @@ if ppm_upload is not None:
         img_inp.append(color_row)
 
     # Calling hough
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB)
 
     # Display Hough
     display()
@@ -206,7 +220,7 @@ else:
             img_inp.append(color_row) 
 
     # Calling hough Function
-    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter)
+    hough(img_inp=img_inp, amplitude=amplitude, frequency=frequency, phase_x=phase_x, phase_y=phase_y, resolution=resolution, r_parameter=r_parameter, RGB=color_RGB)
 
     # Display Hough
     display()
