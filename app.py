@@ -75,7 +75,9 @@ def hough(
         out_file.write(f"{file_type} {str(H_COL)} {str(H_ROW)} {ppm_color} ")
         for i in range(H_ROW):
             for j in range(H_COL):
-                out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
+                out_file.write(f"{int(hough[i][j]*(H_ROW - j)/10)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/60.0))} ")
+                ## Mr. Lin's color
+                # out_file.write(f"{int(hough[i][j]*(H_ROW - j)/30)} {int(hough[i][j]*(H_COL - j)/20)} {int(hough[i][j]*(1.0 + i/23.0))} ")
                 # out_file.write(f"{int(hough[i][j]+R)} {int(hough[i][j]+G)} {int(hough[i][j]+B)} ")
 
 
