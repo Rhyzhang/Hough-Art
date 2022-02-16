@@ -3,7 +3,8 @@ from random import randrange
 
 import streamlit as st
 from cv2 import COLOR_BGR2RGB, cvtColor, imread
-from matplotlib.pyplot import axis, imshow, savefig
+from funcsigs import Parameter
+from matplotlib.pyplot import axis, imshow, savefig, title
 
 
 def r_function(
@@ -119,16 +120,18 @@ def hough(
 
 def display():
     """This displays the hough art"""
+    parameter = f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}, {color_algo}, {drawing_selection}, {r_parameter}'
+
     # Save Image
     img = imread("hough_art.ppm")
     img = cvtColor(img,COLOR_BGR2RGB)
     imshow(img)
     axis('off')
+    title(f'{parameter}')
     savefig('hough_art.jpg', dpi=500)
 
     # Display
     st.image('hough_art.jpg', caption="Hough Art!!!", output_format="JPEG")
-    st.success(f'Parameters of: {amplitude}, {frequency}, {phase_x}, {phase_y}')
 
     # Download Buttons
     col1, col2 = st.columns(2)
