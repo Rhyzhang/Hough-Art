@@ -1,9 +1,9 @@
 import math
 from random import randrange
 
-import cv2
-import matplotlib.pyplot as plt
 import streamlit as st
+from cv2 import COLOR_BGR2RGB, cvtColor, imread
+from matplotlib.pyplot import axis, imshow, savefig
 
 
 def r_function(
@@ -111,19 +111,20 @@ def hough(
         for i in range(H_ROW):
             for j in range(H_COL):
 
+                # Color Function
                 red, green, blue = color_function(color_algo, R, G, B, i, j, H_ROW, H_COL)
-
+                # Write into file
                 out_file.write(f"{int(hough[i][j]*(red))} {int(hough[i][j]*(green))} {int(hough[i][j]*(blue))} ")
 
 
 def display():
     """This displays the hough art"""
     # Save Image
-    img = cv2.imread("hough_art.ppm")
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-    plt.imshow(img)
-    plt.axis('off')
-    plt.savefig('hough_art.jpg', dpi=500)
+    img = imread("hough_art.ppm")
+    img = cvtColor(img,COLOR_BGR2RGB)
+    imshow(img)
+    axis('off')
+    savefig('hough_art.jpg', dpi=500)
 
     # Display
     st.image('hough_art.jpg', caption="Hough Art!!!", output_format="JPEG")
@@ -188,7 +189,7 @@ color_algo = st.sidebar.selectbox(
 )
 
 # Color tuning
-color = st.sidebar.color_picker('Pick A Color', '#FF0000', help="NOTE: Only compatable with Ryan's algo").lstrip('#')
+color = st.sidebar.color_picker('Pick A Color', value='#50AADE', help="NOTE: Only compatable with Ryan's algo").lstrip('#')
 st.write('The current color is', '#' + color)
 color_RGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
 
