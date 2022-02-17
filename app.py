@@ -3,7 +3,6 @@ from random import randrange
 
 import streamlit as st
 from cv2 import COLOR_BGR2RGB, cvtColor, imread
-from funcsigs import Parameter
 from matplotlib.pyplot import axis, imshow, savefig, title
 
 
