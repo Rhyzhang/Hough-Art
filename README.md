@@ -2,7 +2,7 @@
 
 # Problem Description:
 
-    The goal of this project was to show how programming and mathematics can merge and create beautiful art that is both visually stunning and pleasing to the eye. To do this Mr. Lin 
+The goal of this project was to show how programming and mathematics can merge and create beautiful art that is both visually stunning and pleasing to the eye. To do this Mr. Lin 
 used Hough Transform which is an technique used in computer vision to identify straight lines in a photo. What students tried to do was to be inspired by the newly learned Hough 
 transform to enable themselves to create mathematical art. What this means is that the art created does not need to accurately represent a Hough transformation. We simply used the 
 idea and procedures of a Hough transformation to generate new and unique art. To put it simply, we can do anything we want including changing all the parameters and all the functions 
@@ -10,14 +10,14 @@ being used. Thus, I wanted to create a website that allowed a great user experie
   
 # Explanation Of Mathematical Functions:
 
-    The mathematical ideas used in this project are the: Hough Transform, Polar coordinates, and Transformations. I will attempt to explain these ideas but since I do not know what 
+The mathematical ideas used in this project are the: Hough Transform, Polar coordinates, and Transformations. I will attempt to explain these ideas but since I do not know what 
 am doing, I would recommend lifting your eyes away from what I am about to write and read qualified articles about the listed topics. I have never officially learned these topics 
 in depth, plus I have no idea what I am doing half the time. Please, proceed with caution.
   
 ![image](https://user-images.githubusercontent.com/65325330/154397760-9c80efc2-7c79-4a90-8c72-d31258c1ff83.png)
 Figure 1 - Credit: Mr. Lin
 
-    The Hough Transformation was/still is a computer vision technique used to find straight lines in an image. For example, in the image shown above (Figure 1) the original gray 
+The Hough Transformation was/still is a computer vision technique used to find straight lines in an image. For example, in the image shown above (Figure 1) the original gray 
 scale image was converted to white and black pixels, then through the Hough Transform (shown in the middle of the image), the computer was able to calculate the straight lines in the 
 image through the pixel or points of the white and black image. The reason why it is wavy is because the Hough Transform was done in polar coordinates as computer cannot handle the 
 normal y = mx + b  representation of a line. That is because computer can no store a potentially HUGE b value when it has a limited amount of storage. Long story short you basically 
@@ -27,12 +27,12 @@ you get the point, graph.
 
 # Implementation:
 
-    So how does it work? As previously explained, we took inspiration from the Hough Transform thus, it means if doesn’t really have to be accurate… it’s inspiration not real 
+So how does it work? As previously explained, we took inspiration from the Hough Transform thus, it means if doesn’t really have to be accurate… it’s inspiration not real 
 implementation. Here is what’s going on in the background.
-    There will be a random input image to use the Hough Transformation on. Alternatively, you can also submit you own image. Then a function will create a Hough Space of that image 
+There will be a random input image to use the Hough Transformation on. Alternatively, you can also submit you own image. Then a function will create a Hough Space of that image 
 and out put it as a new image. The new image will also be colored to make it look even more pretty. In the Hough function you can tune all the parameters for fun. For example, 
 instead of using Cos and Sin to calculate our radius how about we use Tanh with hmm… haha Cosh! Keep clicking random to generate random parameters and your basically done.
-    Please feel free to use my website. If you want to contribute, please just submit a pull request. 
+Please feel free to use my website. If you want to contribute, please just submit a pull request. 
 
 
 [hough_art (13)](https://user-images.githubusercontent.com/65325330/154397330-85974206-11c2-4252-8887-2c13c63ffb0b.jpg)
